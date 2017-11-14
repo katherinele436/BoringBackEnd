@@ -71,7 +71,7 @@ public class BoringBackEnd {
             case "EOS":
                 break;
             default:
-                errorMessage("invalid transaction");
+                fatalError();
                 break;
 
 
@@ -146,7 +146,7 @@ public class BoringBackEnd {
 
     }
     // takes a String as a parameter, outputs it to console and Exits the program with error code 1
-    public static void fatalError(String errorMsg){
+    public static void fatalError(){
 
         System.exit(1);
     }
