@@ -108,7 +108,7 @@ public class BoringBackEnd {
     }
 //katherine
     public static boolean accountNumMatchesName(String accNum, String accName){
-        for (ArrayList<String> list: newMasterAccounts){
+        for (ArrayList<String> list: oldMasterAccounts){
             if (list.get(1).equals(accNum) && list.get(4).equals(accName)){
                 return true;
             }
