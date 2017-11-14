@@ -37,7 +37,7 @@ public class BoringBackEnd {
 //takes two Strings: an Account Number and an Account Name. Adds a new account to the New Master Accounts List,
     public static void createAccount(String accNum, String accName){
         String[] newAccount=[accNum, "0", accName];
-        newMasterAccounts.add(newAccount);
+        oldMasterAccounts.add(newAccount);
     }
 //takes an array of strings. Deletes an account from the New Master Accounts List.
 //Only Used BEFORE oldMasterAccounts has been transferred over to newMasterAccounts
