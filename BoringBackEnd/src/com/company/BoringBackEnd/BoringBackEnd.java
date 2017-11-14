@@ -1,6 +1,7 @@
 package com.company.BoringBackEnd;
 
 import java.util.*;
+import java.io.*;
 
 public class BoringBackEnd {
 
@@ -11,6 +12,7 @@ public class BoringBackEnd {
     public static String newMasterAccountsFilename;
     public static String validAccountsFilename;
     public static String transactionSummaryFilename;
+    public static
 
 //katherine
     public static void readOldMasterAccounts(){
@@ -43,7 +45,7 @@ public class BoringBackEnd {
         if(isBalanceZero(account)){
             if(masterAccountListContains(account[0])){
                 for(i=0; i<oldMasterAccounts.size(); i++ ){
-                    if(oldMasterAccounts[i]=account){
+                    if(oldMasterAccounts[i]==account){
                         oldMasterAccounts.remove(i);
                         return;
                     }//end if
@@ -108,15 +110,33 @@ public class BoringBackEnd {
     public static boolean checkValidAmount(){
         return true;
     }
+
+    public static void sortNewMasterAccounts(){
+        Collections.sort(newMasterAccounts, new Comparator<List<String>> () {
+            @Override //overides Comparator function to compare a List of Strings and sort it properly
+            public int compare(List<String> stringA, List<String> stringB) {
+                return stringA.get(1).compareTo(stringB.get(1));
+            }
+        });
+    }
 //john
     public static void writeNewMasterAccounts(){
-
+        sortNewMasterAccounts();//Sorts global List newMasterAccounts
+        FileWriter writer = new FileWriter(newMasterAccountsFilename);
+        for(String[] str: newMasterAccounts) {
+            writer.write(str[0]+ " "+str[1]+" "+str[2]);
+        }
+        writer.close();
     }
 //john
     public static void writeNewValidAccounts(){
-
+        FileWriter writer = new FileWriter(newMasterAccountsFilename);
+        for(String[] str: newMasterAccounts) {
+            writer.write(str[0]);
+        }
+        writer.close();
     }
-//john
+
     //reads out an error message, than exits the program with error code 1
     public static void fatalError(String errorMsg){
         errorMessage(errorMsg);
