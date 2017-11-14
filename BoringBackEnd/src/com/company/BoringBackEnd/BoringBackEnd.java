@@ -70,6 +70,9 @@ public class BoringBackEnd {
                 break;
             case "EOS":
                 break;
+            default:
+                errorMessage("invalid transaction");
+                break;
 
 
         }
