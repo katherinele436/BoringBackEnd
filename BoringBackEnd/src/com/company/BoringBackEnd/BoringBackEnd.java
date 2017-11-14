@@ -40,15 +40,15 @@ public class BoringBackEnd {
     public static void deleteAccount(){
 
     }
-
+//mike
     public static void withdraw(){
 
     }
-
+//mike
     public static void deposit(){
 
     }
-
+/mike
     public static void transfer(){
 
     }
@@ -88,9 +88,10 @@ public class BoringBackEnd {
     public static void writeNewValidAccounts(){
 
     }
-//john
-    public static void fatalError(){
-
+    // takes a String as a parameter, outputs it to console and Exits the program with error code 1
+    public static void fatalError(String errorMsg){
+        errorMsg(errorMsg)
+        System.exit(1);
     }
 
     public static void errorMessage(String message){
