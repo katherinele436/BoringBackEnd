@@ -32,13 +32,30 @@ public class BoringBackEnd {
     public static void checkTransactionCode(){
 
     }
-//john
+//takes two Strings: an Account Number and an Account Name. Adds a new account to the New Master Accounts List,
     public static void createAccount(String accNum, String accName){
         String[] newAccount=[accNum, "0", accName];
         newMasterAccounts.add(newAccount);
     }
-//john
-    public static void deleteAccount(){
+//takes an array of strings. Deletes an account from the New Master Accounts List.
+//Only Used BEFORE oldMasterAccounts has been transferred over to newMasterAccounts
+    public static void deleteAccount(String[] account){
+        if(isBalanceZero(account)){
+            if(masterAccountListContains(account[0])){
+                for(i=0; i<oldMasterAccounts.size(); i++ ){
+                    if(oldMasterAccounts[i]=account){
+                        oldMasterAccounts.remove(i);
+                        return;
+                    }//end if
+                }//end for
+            }else{
+               errorMessage("Error: Account Not in Found in Old Master Accounts File");
+               return;
+            }//end if
+        }else{
+            errorMessage("Error: Account does not have 0 balance");
+            return;
+        }//end if
 
     }
 
@@ -62,16 +79,16 @@ public class BoringBackEnd {
         return true;
     }
 //takes an array of Strings and an int value and determines if the account balance will be zero or not
-    public static boolean isBalanceZero(String[] account, int transact){
+    public static boolean isBalanceZero(String[] account){
         int accountBalance=Integer.parseInt(account[1]);
-        if(accountBalance-transact<=0){
+        if(accountBalance==0){
             return true;
         }//end if
         return false;
     }
 //takes a string that holds an account number and returns true if that account number is in the old master accounts list
     public static boolean masterAccountListContains(String accNum){
-        for(i in oldMasterAccounts){
+        for(i : oldMasterAccounts){
             String[] arr=oldMasterAccounts[i];
             if(arr[0]==accNum){
                 return true;
