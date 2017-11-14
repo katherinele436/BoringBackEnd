@@ -71,16 +71,73 @@ public class BoringBackEnd {
                 }
             }
         }
-
-
     }
 
     public static void deposit(){
-
+        String accNum = summaryLine[1];
+        String amount = summaryLine[2];
+        int newAmount;
+        //ensures account number field is valid
+        if (!checkValidAccount(accNum)){
+            fatalError();
+        }
+        //ensures account number is on the master accounts list
+        else if (!masterAccountListContains(accNum)){
+            errorMessage("account not in master accounts list");
+        }
+        //ensures amount field is valid
+        else if (!checkValidAmount(amount)){
+            fatalError();
+        }
+        else{
+            //find account number in master accounts, subtract amount from balance
+            for (ArrayList<String> list: masterAccounts){
+                if(list.get(0) == accNum){
+                    newAmount = Integer.parseInt(list.get(1)) + Integer.parseInt(amount);
+                    list.remove(1);
+                    list.add(1, Integer.toString(newAmount));
+                }
+            }
+        }
     }
 
     public static void transfer(){
-
+        String toAccount = summaryLine[1];
+        String fromAccount = summaryLine[3];
+        String amount = summaryLine[2];
+        int newToAmount, newFromAmount;
+        //ensures account number field is valid
+        if (!checkValidAccount(toAccount) || !checkValidAccount(fromAccount)){
+            fatalError();
+        }
+        //ensures account number is on the master accounts list
+        else if (!masterAccountListContains(toAccount) || !masterAccountListContains(fromAccount)){
+            errorMessage("account not in master accounts list");
+        }
+        //ensures balance will not be negative after this transaction
+        else if (isBalanceNegative(fromAccount, amount)){
+            errorMessage("balance would be negative");
+        }
+        //ensures amount field is valid
+        else if (!checkValidAmount(amount)){
+            fatalError();
+        }
+        else{
+            for (ArrayList<String> list: masterAccounts){
+                if(list.get(0) == toAccount){
+                    newToAmount = Integer.parseInt(list.get(1)) + Integer.parseInt(amount);
+                    list.remove(1);
+                    list.add(1, Integer.toString(newToAmount));
+                }
+            }
+            for (ArrayList<String> list: masterAccounts){
+                if(list.get(0) == fromAccount){
+                    newFromAmount = Integer.parseInt(list.get(1)) + Integer.parseInt(amount);
+                    list.remove(1);
+                    list.add(1, Integer.toString(newFromAmount));
+                }
+            }
+        }
     }
     //katherine
     public static boolean isBalanceNegative(String accNum, String amount){
