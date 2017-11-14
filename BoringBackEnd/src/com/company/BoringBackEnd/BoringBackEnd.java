@@ -5,7 +5,7 @@ import java.io.FileReader;
 import java.util.ArrayList;
 
 public class BoringBackEnd {
-
+    public static ArrayList<ArrayList<String>> masterAccounts = null;
     public static ArrayList<String[]> oldMasterAccounts = null;
     public static ArrayList<String[]> newMasterAccounts = null;
     public static String[] summaryLine = null;
@@ -89,11 +89,15 @@ public class BoringBackEnd {
         return false;
     }
 //katherine
-    public static boolean accountNumMatchesName(String accNum){
+    public static boolean accountNumMatchesName(String accNum, String accName){
+        for (ArrayList<String> list: masterAccounts){
+            if (list.get(1).equals(accNum) && list.get(4).equals(accName)){
+                return true;
+            }
+        }
 
 
-
-        return true;
+        return false;
     }
 //john
     public static boolean isBalanceZero(){
