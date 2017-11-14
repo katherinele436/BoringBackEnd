@@ -33,8 +33,9 @@ public class BoringBackEnd {
 
     }
 //john
-    public static void createAccount(){
-
+    public static void createAccount(String accNum, String accName){
+        String[] newAccount=[accNum, "0", accName];
+        newMasterAccounts.add(newAccount);
     }
 //john
     public static void deleteAccount(){
@@ -60,13 +61,23 @@ public class BoringBackEnd {
     public static boolean accountNumMatchesName(){
         return true;
     }
-//john
-    public static boolean isBalanceZero(){
-        return true;
+//takes an array of Strings and an int value and determines if the account balance will be zero or not
+    public static boolean isBalanceZero(String[] account, int transact){
+        int accountBalance=Integer.parseInt(account[1]);
+        if(accountBalance-transact<=0){
+            return true;
+        }//end if
+        return false;
     }
-//john
+//takes a string that holds an account number and returns true if that account number is in the old master accounts list
     public static boolean masterAccountListContains(String accNum){
-        return true;
+        for(i in oldMasterAccounts){
+            String[] arr=oldMasterAccounts[i];
+            if(arr[0]==accNum){
+                return true;
+            }//end if
+        }//end for
+        return false;
     }
 
     public static boolean checkValidAccount(){
