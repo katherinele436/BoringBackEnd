@@ -88,7 +88,7 @@ public class BoringBackEnd {
     }
 //takes a string that holds an account number and returns true if that account number is in the old master accounts list
     public static boolean masterAccountListContains(String accNum){
-        for(i : oldMasterAccounts){
+        for(i=0; i<oldMasterAccounts.size(); i++ ){
             String[] arr=oldMasterAccounts[i];
             if(arr[0]==accNum){
                 return true;
