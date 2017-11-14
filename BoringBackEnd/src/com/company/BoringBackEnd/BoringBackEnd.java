@@ -89,8 +89,10 @@ public class BoringBackEnd {
 
     }
 //john
-    public static void fatalError(){
-
+    //reads out an error message, than exits the program with error code 1
+    public static void fatalError(String errorMsg){
+        errorMessage(errorMsg);
+        System.exit(1);
     }
 
     public static void errorMessage(String message){
