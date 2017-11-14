@@ -1,6 +1,8 @@
 package com.company.BoringBackEnd;
 
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.util.ArrayList;
 
 public class BoringBackEnd {
 
@@ -13,24 +15,49 @@ public class BoringBackEnd {
     public static String transactionSummaryFilename;
 
 //katherine
-    public static void readOldMasterAccounts(){
-
+    public static ArrayList<String> readOldMasterAccounts() throws Exception{
+        ArrayList<String> oldMaster = new ArrayList<>();
+        FileReader theList = new FileReader(oldMasterAccountsFilename);
+        BufferedReader readList = new BufferedReader(theList);
+        String line;
+        while ((line = readList.readLine()) != null) {
+            oldMaster.add(line);
+        }
+        readList.close();;
+        return oldMaster;
     }
 //katherine
     public static void readAllSummaryFiles(){
 
     }
 //katherine
-    public static void readSummaryFile(){
+    public static ArrayList<String> readMergeSummaryFile() throws  Exception{
+
+        ArrayList<String> mergeSum = new ArrayList<>();
+        FileReader theList = new FileReader(transactionSummaryFilename);
+        BufferedReader readList = new BufferedReader(theList);
+        String line;
+        while ((line = readList.readLine()) != null && !line.equals("EOS 0000000 000 0000000")) {
+            mergeSum.add(line);
+        }
+        readList.close();
+        return mergeSum;
 
     }
 //katherine
-    public static void parseSummaryLine(){
-
+    public static String[] parseSummaryLine() throws Exception{
+        FileReader theList = new FileReader(transactionSummaryFilename);
+        BufferedReader readList = new BufferedReader(theList);
+        String line = readList.readLine();
+        if(line == null){
+                return null;
+        }
+        summaryLine = line.split(" ");
+        return summaryLine;
     }
 //katherine
-    public static void checkTransactionCode(){
-
+    public static boolean checkTransactionCode(String transaction){
+        return (!transaction.equals("EOS") || !transaction.equals("NEW") || !transaction.equals("DEL") || !transaction.equals("WDR") || !transaction.equals("XFR") || !transaction.equals("DEP"));
     }
 //john
     public static void createAccount(){
@@ -48,16 +75,24 @@ public class BoringBackEnd {
     public static void deposit(){
 
     }
-/mike
+//mike
     public static void transfer(){
 
     }
 //katherine
-    public static boolean isBalanceNegative(){
-        return true;
+    public static boolean isBalanceNegative(String[] account){
+        double accountBalance= Double.parseDouble(account[1]);
+        if (accountBalance < 0){
+            errorMessage("Account balance is negative");
+            return true;
+        }
+        return false;
     }
 //katherine
-    public static boolean accountNumMatchesName(){
+    public static boolean accountNumMatchesName(String accNum){
+
+
+
         return true;
     }
 //john
@@ -90,7 +125,7 @@ public class BoringBackEnd {
     }
     // takes a String as a parameter, outputs it to console and Exits the program with error code 1
     public static void fatalError(String errorMsg){
-        errorMsg(errorMsg)
+
         System.exit(1);
     }
 
