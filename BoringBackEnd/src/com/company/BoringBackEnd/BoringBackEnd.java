@@ -99,7 +99,7 @@ public class BoringBackEnd {
     }
 //katherine
     public static boolean isBalanceNegative(String accNum, String amount){
-        double accountBalance= Double.parseDouble(amount);
+        int accountBalance= Integer.parseInt(amount);
         if (accountBalance < 0){
             errorMessage("Account balance is negative");
             return true;
