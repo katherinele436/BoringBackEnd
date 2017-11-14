@@ -5,7 +5,8 @@ import java.util.regex.*;
 
 public class BoringBackEnd {
 
-    public static ArrayList<ArrayList<String>> masterAccounts = null;
+    public static ArrayList<ArrayList<String>> oldMasterAccounts = null;
+    public static ArrayList<ArrayList<String>> newMasterAccounts = null;
     public static String[] summaryLine = null;
     public static String oldMasterAccountsFilename;
     public static String newMasterAccountsFilename;
@@ -63,7 +64,7 @@ public class BoringBackEnd {
         }
         else{
             //find account number in master accounts, subtract amount from balance
-            for (ArrayList<String> list: masterAccounts){
+            for (ArrayList<String> list: oldMasterAccounts){
                 if(list.get(0) == accNum){
                     newAmount = Integer.parseInt(list.get(1)) - Integer.parseInt(amount);
                     list.remove(1);
@@ -91,7 +92,7 @@ public class BoringBackEnd {
         }
         else{
             //find account number in master accounts, subtract amount from balance
-            for (ArrayList<String> list: masterAccounts){
+            for (ArrayList<String> list: oldMasterAccounts){
                 if(list.get(0) == accNum){
                     newAmount = Integer.parseInt(list.get(1)) + Integer.parseInt(amount);
                     list.remove(1);
@@ -123,14 +124,14 @@ public class BoringBackEnd {
             fatalError();
         }
         else{
-            for (ArrayList<String> list: masterAccounts){
+            for (ArrayList<String> list: oldMasterAccounts){
                 if(list.get(0) == toAccount){
                     newToAmount = Integer.parseInt(list.get(1)) + Integer.parseInt(amount);
                     list.remove(1);
                     list.add(1, Integer.toString(newToAmount));
                 }
             }
-            for (ArrayList<String> list: masterAccounts){
+            for (ArrayList<String> list: oldMasterAccounts){
                 if(list.get(0) == fromAccount){
                     newFromAmount = Integer.parseInt(list.get(1)) + Integer.parseInt(amount);
                     list.remove(1);
@@ -144,7 +145,7 @@ public class BoringBackEnd {
         return true;
     }
     //katherine
-    public static boolean accountNumMatchesName(String accNum){
+    public static boolean accountNumMatchesName(String accNum, String accName){
         return true;
     }
     //john
@@ -219,9 +220,11 @@ public class BoringBackEnd {
     }
 
     public static void main(String[] args) {
-        masterAccounts = new ArrayList<ArrayList<String>>();
+        oldMasterAccounts = new ArrayList<ArrayList<String>>();
+        newMasterAccounts = new ArrayList<ArrayList<String>>();
         readOldMasterAccounts();
         readAllSummaryFiles();
+        newMasterAccounts = oldMasterAccounts;
         writeNewMasterAccounts();
         writeNewValidAccounts();
     }
