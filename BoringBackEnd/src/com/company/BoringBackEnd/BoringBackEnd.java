@@ -92,8 +92,11 @@ public class BoringBackEnd {
     public static void createAccount(){
         String accNum=summaryLine[1];
         String accName=summaryLine[3];
-        String[] newAccount=[accNum, "0", accName];
-        oldMasterAccounts.add(newAccount);
+        ArrayList<String>list=new ArrayList<String>();
+        list.add(accNum);
+        list.add("0");
+        list.add(accName);
+        oldMasterAccounts.add(list);
     }
   
 //takes an array of strings. Deletes an account from the New Master Accounts List.
@@ -103,12 +106,13 @@ public class BoringBackEnd {
         String accName=summaryLine[3];
         if(isBalanceZero()){
             if(masterAccountListContains()){
-                String[]=account[accNum, "0", accName];
-                for(i=0; i<oldMasterAccounts.size(); i++ ){
-                    if(oldMasterAccounts[i]==account){
-                        oldMasterAccounts.remove(i);
+                int count=0;
+                for(ArrayList<String> list: oldMasterAccounts){
+                    if(list[0]==accNum && list[2]==accName){
+                        oldMasterAccounts.remove(count);
                         return;
                     }//end if
+                    count+=1;
                 }//end for
             }else{
                errorMessage("Error: Account Not in Found in Old Master Accounts File");
@@ -244,10 +248,9 @@ public class BoringBackEnd {
 //takes an array of Strings and an int value and determines if the account balance will be zero or not
     public static boolean isBalanceZero(){
         String accNum=summaryLine[1]
-        for(int i=0; i<oldMasterAccounts.size(); i++ ) {
-            String[] account=oldMasterAccounts.get(i);
-            if(account[0]==accNum){
-                int accountBalance=Integer.parseInt(account[1]);
+        for(ArrayList<String> list: oldMasterAccounts) {
+            if(list.get(0)==accNum){
+                int accountBalance=Integer.parseInt(list.get(1));
                 if(accountBalance==0){
                     return true;
                 }//end if
@@ -259,9 +262,8 @@ public class BoringBackEnd {
 //takes a string that holds an account number and returns true if that account number is in the old master accounts list
     public static boolean masterAccountListContains(){
         String accNum=summaryLine[1]
-        for(int i=0; i<oldMasterAccounts.size(); i++ ){
-            String[] arr=oldMasterAccounts[i];
-            if(arr[0]==accNum){
+        for(ArrayList<String> list: oldMasterAccounts){ ;
+            if(list.get(0)==accNum){
                 return true;
             }//end if
         }//end for
@@ -323,6 +325,7 @@ public class BoringBackEnd {
                 return stringA.get(1).compareTo(stringB.get(1));
             }
         });
+        newMasterAccounts.add
         //Second Write To File
         sortNewMasterAccounts();//Sorts global List newMasterAccounts
         FileWriter writer = new FileWriter(newMasterAccountsFilename);
