@@ -13,7 +13,6 @@ public class BoringBackEnd {
     public static String newMasterAccountsFilename;
     public static String validAccountsFilename;
     public static String transactionSummaryFilename;
-    public static
 
 //katherine
     public static void readOldMasterAccounts() throws Exception{
