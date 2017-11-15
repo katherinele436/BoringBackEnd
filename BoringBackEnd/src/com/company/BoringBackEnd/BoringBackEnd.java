@@ -1,9 +1,6 @@
 package com.company.BoringBackEnd;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -21,43 +18,58 @@ public class BoringBackEnd {
     public static String transactionSummaryFilename;
 
 //katherine
-    public static void readOldMasterAccounts() throws Exception{
-        ArrayList<String> oldMaster= new ArrayList<>();
-        FileReader theList = new FileReader(oldMasterAccountsFilename);
-        BufferedReader readList = new BufferedReader(theList);
-        String line;
-        while ((line = readList.readLine()) != null) {
-            oldMaster.add(line);
+    public static void readOldMasterAccounts(){
+        FileReader theList = null;
+        try{
+            theList = new FileReader(oldMasterAccountsFilename);
+        }catch (FileNotFoundException e){
+            fatalError(600);
         }
-        readList.close();
-        oldMasterAccounts.add(oldMaster);
-    }
-    //katherine
-    public static void readAllSummaryFiles(){
-        //Will handle reading multiple summary files if this is a requirement
+        BufferedReader readList = new BufferedReader(theList);
+        try {
+            String line = readList.readLine();
+            String[] data = new String[3];
+            while (line != null) {
+                ArrayList<String> oldMaster= new ArrayList<>();
+                data = line.split(" ");
+                oldMaster.add(data[0]);
+                oldMaster.add(data[1]);
+                oldMaster.add(data[2]);
+                oldMasterAccounts.add(oldMaster);
+                line = readList.readLine();
+            }
+            readList.close();
+        }catch (IOException e){
+            fatalError(601);
+        }
     }
 //katherine
-    public static void readMergeSummaryFile() throws  Exception{
-
-        ArrayList<String> mergeSum = new ArrayList<>();
-        FileReader theList = new FileReader(transactionSummaryFilename);
-        BufferedReader readList = new BufferedReader(theList);
-        String line;
-        while ((line = readList.readLine()) != null) {
-            checkTransactionCode(parseSummaryLine(line));
+    public static void readMergeSummaryFile(){
+        FileReader theList = null;
+        try {
+            theList = new FileReader(transactionSummaryFilename);
+        }catch(FileNotFoundException e){
+            fatalError(500);
         }
-        readList.close();
+        BufferedReader readList = new BufferedReader(theList);
+        try {
+            String line = readList.readLine();
+            while (line != null) {
+                parseSummaryLine(line);
+                checkTransactionCode();
+                line = readList.readLine();
+            }
+            readList.close();
+        }catch(IOException e){
+            fatalError(501);
+        }
     }
 //katherine
-    public static String[] parseSummaryLine(String line) throws Exception{
-        if(line == null){
-            return null;
-        }
+    public static void parseSummaryLine(String line){
         summaryLine = line.split(" ");
-        return summaryLine;
     }
 //katherine
-    public static void checkTransactionCode(String[] summaryLine){
+    public static void checkTransactionCode(){
         switch (summaryLine[0]){
             case "NEW":
                 createAccount();
@@ -77,19 +89,19 @@ public class BoringBackEnd {
             case "EOS":
                 break;
             default:
-                fatalError();
+                fatalError(100);
                 break;
         }
     }
 //takes two Strings: an Account Number and an Account Name. Adds a new account to the New Master Accounts List,
     public static void createAccount(){
         String accNum = summaryLine[1];
-        String accName = summaryLine[3];
+        String accName = summaryLine[4];
         if(masterAccountListContains(accNum)){
             errorMessage("account number already exists");
         }
         else if(!checkValidAccount(accNum) || !checkValidName(accName)){
-            fatalError();
+            fatalError(201);
         }
         else {
             ArrayList<String> list = new ArrayList<String>();
@@ -99,36 +111,39 @@ public class BoringBackEnd {
             oldMasterAccounts.add(list);
         }
     }
-//takes an array of strings. Deletes an account from the New Master Accounts List.
-//Only Used BEFORE oldMasterAccounts has been transferred over to newMasterAccounts
+
     public static void deleteAccount(){
-        String accNum=summaryLine[1];
-        String accName=summaryLine[3];
+        String accNum = summaryLine[1];
+        String accName = summaryLine[4];
         if(!checkValidName(accName) || !checkValidAccount(accNum)){
-            fatalError();
+            fatalError(202);
         }
-        if(isBalanceZero(accNum)){
-            if(masterAccountListContains(accNum)){
+        if(!masterAccountListContains(accNum)){
+            errorMessage("account not in master accounts list");
+            return;
+        }
+        if(accountNumMatchesName(accNum,accName)){
+            if(isBalanceZero(accNum)){
                 int count=0;
                 for(ArrayList<String> list: oldMasterAccounts){
-                    if(list.get(0) == accNum && list.get(2) == accName){
+                    if(list.get(0).equals(accNum) && list.get(2).equals(accName)){
                         oldMasterAccounts.remove(count);
                         return;
                     }//end if
-                    count+=1;
+                    count++;
                 }//end for
             }else{
-               errorMessage("account not in master accounts list");
+               errorMessage("account does not have 0 balance");
                return;
             }//end if
         }else{
-            errorMessage("account does not have 0 balance");
+            errorMessage("account number does not match name");
             return;
         }//end if
     }
 //mike
     public static void withdraw(){
-        String accNum = summaryLine[1];
+        String accNum = summaryLine[3];
         String amount = summaryLine[2];
         int newAmount;
         //ensures account number is on the master accounts list
@@ -141,16 +156,16 @@ public class BoringBackEnd {
         }
         //ensures account number field is valid
         else if (!checkValidAccount(accNum)){
-            fatalError();
+            fatalError(203);
         }
         //ensures amount field is valid
         else if (!checkValidAmount(amount)){
-            fatalError();
+            fatalError(204);
         }
         else{
             //find account number in master accounts, subtract amount from balance
             for (ArrayList<String> list: oldMasterAccounts){
-                if(list.get(0) == accNum){
+                if(list.get(0).equals(accNum)){
                     newAmount = Integer.parseInt(list.get(1)) - Integer.parseInt(amount);
                     list.remove(1);
                     list.add(1, Integer.toString(newAmount));
@@ -165,7 +180,7 @@ public class BoringBackEnd {
         int newAmount;
         //ensures account number field is valid
         if (!checkValidAccount(accNum)){
-            fatalError();
+            fatalError(205);
         }
         //ensures account number is on the master accounts list
         else if (!masterAccountListContains(accNum)){
@@ -173,12 +188,12 @@ public class BoringBackEnd {
         }
         //ensures amount field is valid
         else if (!checkValidAmount(amount)){
-            fatalError();
+            fatalError(206);
         }
         else{
             //find account number in master accounts, subtract amount from balance
             for (ArrayList<String> list: oldMasterAccounts){
-                if(list.get(0) == accNum){
+                if(list.get(0).equals(accNum)){
                     newAmount = Integer.parseInt(list.get(1)) + Integer.parseInt(amount);
                     list.remove(1);
                     list.add(1, Integer.toString(newAmount));
@@ -194,7 +209,7 @@ public class BoringBackEnd {
         int newToAmount, newFromAmount;
         //ensures account number field is valid
         if (!checkValidAccount(toAccount) || !checkValidAccount(fromAccount)){
-            fatalError();
+            fatalError(207);
         }
         //ensures account number is on the master accounts list
         else if (!masterAccountListContains(toAccount) || !masterAccountListContains(fromAccount)){
@@ -206,18 +221,18 @@ public class BoringBackEnd {
         }
         //ensures amount field is valid
         else if (!checkValidAmount(amount)){
-            fatalError();
+            fatalError(208);
         }
         else{
             for (ArrayList<String> list: oldMasterAccounts){
-                if(list.get(0) == toAccount){
+                if(list.get(0).equals(toAccount)){
                     newToAmount = Integer.parseInt(list.get(1)) + Integer.parseInt(amount);
                     list.remove(1);
                     list.add(1, Integer.toString(newToAmount));
                 }
             }
             for (ArrayList<String> list: oldMasterAccounts){
-                if(list.get(0) == fromAccount){
+                if(list.get(0).equals(fromAccount)){
                     newFromAmount = Integer.parseInt(list.get(1)) + Integer.parseInt(amount);
                     list.remove(1);
                     list.add(1, Integer.toString(newFromAmount));
@@ -228,10 +243,13 @@ public class BoringBackEnd {
 
 //katherine
     public static boolean isBalanceNegative(String accNum, String amount){
-        int accountBalance= Integer.parseInt(amount);
-        if (accountBalance < 0){
-            errorMessage("Account balance is negative");
-            return true;
+        for (ArrayList<String> list: oldMasterAccounts){
+            if(list.get(0).equals(accNum)){
+                int newBalance = Integer.parseInt(list.get(1)) - Integer.parseInt(amount);
+                if(newBalance < 0){
+                    return true;
+                }
+            }
         }
         return false;
     }
@@ -247,7 +265,7 @@ public class BoringBackEnd {
 //takes an array of Strings and an int value and determines if the account balance will be zero or not
     public static boolean isBalanceZero(String accNum){
         for(ArrayList<String> list: oldMasterAccounts) {
-            if(list.get(0) == accNum){
+            if(list.get(0).equals(accNum)){
                 int accountBalance = Integer.parseInt(list.get(1));
                 if(accountBalance == 0){
                     return true;
@@ -259,8 +277,8 @@ public class BoringBackEnd {
     }
 //takes a string that holds an account number and returns true if that account number is in the old master accounts list
     public static boolean masterAccountListContains(String accNum){
-        for(ArrayList<String> list: oldMasterAccounts){ ;
-            if(list.get(0) == accNum){
+        for(ArrayList<String> list: oldMasterAccounts){
+            if(list.get(0).equals(accNum)){
                 return true;
             }//end if
         }//end for
@@ -316,9 +334,9 @@ public class BoringBackEnd {
     //john
     public static void writeNewMasterAccounts(){
         //First Sort New Master Accounts Array List
-        Collections.sort(newMasterAccounts, new Comparator<List<String>> () {
+        Collections.sort(newMasterAccounts, new Comparator<ArrayList<String>> () {
             @Override //overides Comparator function to compare a List of Strings and sort it properly
-            public int compare(List<String> listA, List<String> listB) {
+            public int compare(ArrayList<String> listA, ArrayList<String> listB) {
                 return listA.get(0).compareTo(listB.get(0));
             }
         });
@@ -327,31 +345,31 @@ public class BoringBackEnd {
         try {
             writer = new FileWriter(newMasterAccountsFilename);
             for (ArrayList<String> list : newMasterAccounts) {
-                writer.write(list.get(0) + " " + list.get(1) + " " + list.get(2));
+                writer.write(list.get(0) + " " + list.get(1) + " " + list.get(2) +"\n");
             }
             writer.close();
         }catch(IOException e){
-            fatalError();
+            fatalError(300);
         }
     }
     //john
     public static void writeNewValidAccounts(){
         FileWriter writer = null;
         try {
-            writer = new FileWriter(newMasterAccountsFilename);
+            writer = new FileWriter(validAccountsFilename);
             for (ArrayList<String> list : newMasterAccounts) {
-                writer.write(list.get(0));
+                writer.write(list.get(0) + "\n");
             }
             writer.close();
         }catch(IOException e){
-            fatalError();
+            fatalError(301);
         }
     }
 
     //reads out an error message, than exits the program with error code 1
-    public static void fatalError(){
+    public static void fatalError(int code){
         System.out.println("fatal error");
-        System.exit(1);
+        System.exit(code);
     }
 
     public static void errorMessage(String message){
@@ -359,14 +377,14 @@ public class BoringBackEnd {
     }
 
     public static void main(String[] args) {
+        transactionSummaryFilename = args[0];
+        oldMasterAccountsFilename = args[1];
+        newMasterAccountsFilename = args[2];
+        validAccountsFilename = args[3];
         oldMasterAccounts = new ArrayList<ArrayList<String>>();
         newMasterAccounts = new ArrayList<ArrayList<String>>();
-        try {
-            readOldMasterAccounts();
-        } catch (Exception e){
-            fatalError();
-        }
-        readAllSummaryFiles();
+        readOldMasterAccounts();
+        readMergeSummaryFile();
         newMasterAccounts = oldMasterAccounts;
         writeNewMasterAccounts();
         writeNewValidAccounts();
