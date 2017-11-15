@@ -13,7 +13,6 @@ public class BoringBackEnd {
     public static String newMasterAccountsFilename;
     public static String validAccountsFilename;
     public static String transactionSummaryFilename;
-    public static
 
 //katherine
     public static void readOldMasterAccounts() throws Exception{
@@ -238,10 +237,9 @@ public class BoringBackEnd {
 //takes an array of Strings and an int value and determines if the account balance will be zero or not
     public static boolean isBalanceZero(){
         String accNum=summaryLine[1]
-        for(i=0; i<oldMasterAccounts.size(); i++ ) {
-            String[] account=oldMasterAccounts.get(i);
-            if(account[0]==accNum){
-                int accountBalance=Integer.parseInt(account[1]);
+        for(ArrayList<String> list: oldMasterAccounts) {
+            if(list.get(0)==accNum){
+                int accountBalance=Integer.parseInt(list.get(1));
                 if(accountBalance==0){
                     return true;
                 }//end if
@@ -253,9 +251,8 @@ public class BoringBackEnd {
 //takes a string that holds an account number and returns true if that account number is in the old master accounts list
     public static boolean masterAccountListContains(){
         String accNum=summaryLine[1]
-        for(i=0; i<oldMasterAccounts.size(); i++ ){
-            String[] arr=oldMasterAccounts[i];
-            if(arr[0]==accNum){
+        for(ArrayList<String> list: oldMasterAccounts){ ;
+            if(list.get(0)==accNum){
                 return true;
             }//end if
         }//end for
@@ -317,6 +314,7 @@ public class BoringBackEnd {
                 return stringA.get(1).compareTo(stringB.get(1));
             }
         });
+        newMasterAccounts.add
         //Second Write To File
         sortNewMasterAccounts();//Sorts global List newMasterAccounts
         FileWriter writer = new FileWriter(newMasterAccountsFilename);
