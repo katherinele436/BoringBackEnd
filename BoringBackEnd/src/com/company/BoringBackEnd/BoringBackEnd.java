@@ -85,8 +85,11 @@ public class BoringBackEnd {
     public static void createAccount(){
         String accNum=summaryLine[1];
         String accName=summaryLine[3];
-        String[] newAccount=[accNum, "0", accName];
-        oldMasterAccounts.add(newAccount);
+        ArrayList<String>list=new ArrayList<String>();
+        list.add(accNum);
+        list.add("0");
+        list.add(accName);
+        oldMasterAccounts.add(list);
     }
   
 //takes an array of strings. Deletes an account from the New Master Accounts List.
@@ -96,12 +99,13 @@ public class BoringBackEnd {
         String accName=summaryLine[3];
         if(isBalanceZero()){
             if(masterAccountListContains()){
-                String[]=account[accNum, "0", accName];
-                for(i=0; i<oldMasterAccounts.size(); i++ ){
-                    if(oldMasterAccounts[i]==account){
-                        oldMasterAccounts.remove(i);
+                int count=0;
+                for(ArrayList<String> list: oldMasterAccounts){
+                    if(list[0]==accNum && list[2]==accName){
+                        oldMasterAccounts.remove(count);
                         return;
                     }//end if
+                    count+=1;
                 }//end for
             }else{
                errorMessage("Error: Account Not in Found in Old Master Accounts File");
