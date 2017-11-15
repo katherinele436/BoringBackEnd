@@ -1,10 +1,10 @@
 package com.company.BoringBackEnd;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.util.ArrayList;
-import java.util.regex.*;
 
 public class BoringBackEnd {
-
     public static ArrayList<ArrayList<String>> oldMasterAccounts = null;
     public static ArrayList<ArrayList<String>> newMasterAccounts = null;
     public static String[] summaryLine = null;
@@ -13,25 +13,70 @@ public class BoringBackEnd {
     public static String validAccountsFilename;
     public static String transactionSummaryFilename;
 
-    //katherine
-    public static void readOldMasterAccounts(){
-
+//katherine
+    public static void readOldMasterAccounts() throws Exception{
+        ArrayList<String> oldMaster= new ArrayList<>();
+        FileReader theList = new FileReader(oldMasterAccountsFilename);
+        BufferedReader readList = new BufferedReader(theList);
+        String line;
+        while ((line = readList.readLine()) != null) {
+            oldMaster.add(line);
+        }
+        readList.close();
+        oldMasterAccounts.add(oldMaster);
     }
     //katherine
     public static void readAllSummaryFiles(){
 
     }
-    //katherine
-    public static void readSummaryFile(){
+
+//katherine
+    public static void readMergeSummaryFile() throws  Exception{
+
+        ArrayList<String> mergeSum = new ArrayList<>();
+        FileReader theList = new FileReader(transactionSummaryFilename);
+        BufferedReader readList = new BufferedReader(theList);
+        String line;
+        while ((line = readList.readLine()) != null) {
+            checkTransactionCode(parseSummaryLine(line));
+        }
+        readList.close();
 
     }
-    //katherine
-    public static void parseSummaryLine(){
-
+//katherine
+    public static String[] parseSummaryLine(String line) throws Exception{
+        if(line == null){
+                return null;
+        }
+        summaryLine = line.split(" ");
+        return summaryLine;
     }
-    //katherine
-    public static void checkTransactionCode(){
+//katherine
+    public static boolean checkTransactionCode(String[] summaryLine){
+        switch (summaryLine[0]){
+            case "NEW":
+                createAccount();
+                break;
+            case "DEL":
+                deleteAccount();
+                break;
+            case "WDR":
+                withdraw();
+                break;
+            case "XFR":
+                transfer();
+                break;
+            case "DEP":
+                deposit();
+                break;
+            case "EOS":
+                break;
+            default:
+                fatalError();
+                break;
 
+
+        }
     }
     //john
     public static void createAccount(){
@@ -41,7 +86,7 @@ public class BoringBackEnd {
     public static void deleteAccount(){
 
     }
-
+//mike
     public static void withdraw(){
         String accNum = summaryLine[1];
         String amount = summaryLine[2];
@@ -73,7 +118,7 @@ public class BoringBackEnd {
             }
         }
     }
-
+//mike
     public static void deposit(){
         String accNum = summaryLine[1];
         String amount = summaryLine[2];
@@ -101,7 +146,7 @@ public class BoringBackEnd {
             }
         }
     }
-
+//mike
     public static void transfer(){
         String toAccount = summaryLine[1];
         String fromAccount = summaryLine[3];
@@ -140,13 +185,26 @@ public class BoringBackEnd {
             }
         }
     }
-    //katherine
+
+//katherine
     public static boolean isBalanceNegative(String accNum, String amount){
-        return true;
+        int accountBalance= Integer.parseInt(amount);
+        if (accountBalance < 0){
+            errorMessage("Account balance is negative");
+            return true;
+        }
+        return false;
     }
-    //katherine
+//katherine
     public static boolean accountNumMatchesName(String accNum, String accName){
-        return true;
+        for (ArrayList<String> list: oldMasterAccounts){
+            if (list.get(1).equals(accNum) && list.get(4).equals(accName)){
+                return true;
+            }
+        }
+
+
+        return false;
     }
     //john
     public static boolean isBalanceZero(String accNum){
@@ -210,9 +268,10 @@ public class BoringBackEnd {
     public static void writeNewValidAccounts(){
 
     }
-    //john
+    // takes a String as a parameter, outputs it to console and Exits the program with error code 1
     public static void fatalError(){
 
+        System.exit(1);
     }
 
     public static void errorMessage(String message){
