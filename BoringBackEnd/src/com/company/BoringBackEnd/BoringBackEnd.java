@@ -17,7 +17,7 @@ public class BoringBackEnd {
     public static String validAccountsFilename;
     public static String transactionSummaryFilename;
 
-//katherine
+    //reads the old master accounts file and places the data in an arraylist
     public static void readOldMasterAccounts(){
         FileReader theList = null;
         try{
@@ -43,7 +43,7 @@ public class BoringBackEnd {
             fatalError(601);
         }
     }
-//katherine
+    //reads the merged transaction summary file line by line
     public static void readMergeSummaryFile(){
         FileReader theList = null;
         try {
@@ -64,11 +64,11 @@ public class BoringBackEnd {
             fatalError(501);
         }
     }
-//katherine
+    //parses each line of the summary file into 5 strings of data
     public static void parseSummaryLine(String line){
         summaryLine = line.split(" ");
     }
-//katherine
+    //switch statement that calls a relevant transaction function for the parsed line
     public static void checkTransactionCode(){
         switch (summaryLine[0]){
             case "NEW":
@@ -93,7 +93,7 @@ public class BoringBackEnd {
                 break;
         }
     }
-//takes two Strings: an Account Number and an Account Name. Adds a new account to the New Master Accounts List,
+    //creates an account in the master accounts if all fields valid, and account is unused
     public static void createAccount(){
         String accNum = summaryLine[1];
         String accName = summaryLine[4];
@@ -111,7 +111,8 @@ public class BoringBackEnd {
             oldMasterAccounts.add(list);
         }
     }
-
+    //deletes account from master accounts if balance is zero, account number matches name,
+    //account is in master accounts, and all other fields of the summary line are valid
     public static void deleteAccount(){
         String accNum = summaryLine[1];
         String accName = summaryLine[4];
@@ -141,7 +142,8 @@ public class BoringBackEnd {
             return;
         }//end if
     }
-//mike
+    //subtracts amount from account within master accounts if the balance would not be negative,
+    //the account is in master accounts, and all other fields are valid
     public static void withdraw(){
         String accNum = summaryLine[3];
         String amount = summaryLine[2];
@@ -173,7 +175,7 @@ public class BoringBackEnd {
             }
         }
     }
-//mike
+    //adds amount to account if account is in master accounts and all other fields are valid
     public static void deposit(){
         String accNum = summaryLine[1];
         String amount = summaryLine[2];
@@ -201,7 +203,8 @@ public class BoringBackEnd {
             }
         }
     }
-//mike
+    //adds amount to one account and subtracts from other account if both are in master accounts,
+    //all fields are valid, and the from account would not have negative balance
     public static void transfer(){
         String toAccount = summaryLine[1];
         String fromAccount = summaryLine[3];
@@ -241,7 +244,7 @@ public class BoringBackEnd {
         }
     }
 
-//katherine
+    //conditional checking if balance would be negative after subtracting amount
     public static boolean isBalanceNegative(String accNum, String amount){
         for (ArrayList<String> list: oldMasterAccounts){
             if(list.get(0).equals(accNum)){
@@ -253,7 +256,7 @@ public class BoringBackEnd {
         }
         return false;
     }
-//katherine
+    //conditional checking if the account name matches the account number within master accounts
     public static boolean accountNumMatchesName(String accNum, String accName){
         for (ArrayList<String> list: oldMasterAccounts){
             if (list.get(1).equals(accNum) && list.get(4).equals(accName)){
@@ -262,7 +265,7 @@ public class BoringBackEnd {
         }
         return false;
     }
-//takes an array of Strings and an int value and determines if the account balance will be zero or not
+    //conditional checking if the account balance is zero for a specified account number
     public static boolean isBalanceZero(String accNum){
         for(ArrayList<String> list: oldMasterAccounts) {
             if(list.get(0).equals(accNum)){
@@ -275,7 +278,7 @@ public class BoringBackEnd {
         }//end for
         return false;
     }
-//takes a string that holds an account number and returns true if that account number is in the old master accounts list
+    //conditional checking if master accounts list contains the specified account number
     public static boolean masterAccountListContains(String accNum){
         for(ArrayList<String> list: oldMasterAccounts){
             if(list.get(0).equals(accNum)){
@@ -284,7 +287,7 @@ public class BoringBackEnd {
         }//end for
         return false;
     }
-
+    //checks if the account number field is valid
     public static boolean checkValidAccount(String accNum){
         int account;
         try{
@@ -302,7 +305,7 @@ public class BoringBackEnd {
         }
         return true;
     }
-
+    //checks if the account name field is valid
     public static boolean checkValidName(String name){
         Pattern pattern = Pattern.compile("[a-zA-Z0-9]*");
         Matcher matcher = pattern.matcher(name);
@@ -320,7 +323,7 @@ public class BoringBackEnd {
         }
         return true;
     }
-
+    //checks if the amount field is valid
     public static boolean checkValidAmount(String amount){
         int check;
         try{
@@ -331,7 +334,7 @@ public class BoringBackEnd {
         return true;
     }
   
-    //john
+    //sorts new master accounts list and writes to new master accounts file
     public static void writeNewMasterAccounts(){
         //First Sort New Master Accounts Array List
         Collections.sort(newMasterAccounts, new Comparator<ArrayList<String>> () {
@@ -352,7 +355,7 @@ public class BoringBackEnd {
             fatalError(300);
         }
     }
-    //john
+    //writes the account numbers in new master accounts to valid accounts file
     public static void writeNewValidAccounts(){
         FileWriter writer = null;
         try {
@@ -366,16 +369,22 @@ public class BoringBackEnd {
         }
     }
 
-    //reads out an error message, than exits the program with error code 1
+    //reads out an error message, than exits the program with a specified error code
     public static void fatalError(int code){
         System.out.println("fatal error");
         System.exit(code);
     }
-
+    //takes in a string and prints to standard output as an error message
     public static void errorMessage(String message){
         System.out.println("error: " + message + ", transaction skipped");
     }
-
+/*
+    This commandline program takes in 4 files as arguements: transaction summary file, old master accounts
+    list, new master accounts list, and valid accounts list. The transaction summary file and old master accounts
+    are used by the program as input, while the output files are the new master accounts and the valid accounts.
+    This program also outputs an error log to standard output. The intention of this program is to update the
+    master accounts and the valid accounts lists using the daily transaction summaries.
+*/
     public static void main(String[] args) {
         transactionSummaryFilename = args[0];
         oldMasterAccountsFilename = args[1];
