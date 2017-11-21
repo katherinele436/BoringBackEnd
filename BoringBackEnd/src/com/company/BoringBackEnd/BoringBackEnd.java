@@ -106,7 +106,7 @@ public class BoringBackEnd {
         else {
             ArrayList<String> list = new ArrayList<String>();
             list.add(accNum);
-            list.add("0");
+            list.add("000");
             list.add(accName);
             oldMasterAccounts.add(list);
         }
