@@ -259,7 +259,7 @@ public class BoringBackEnd {
     //conditional checking if the account name matches the account number within master accounts
     public static boolean accountNumMatchesName(String accNum, String accName){
         for (ArrayList<String> list: oldMasterAccounts){
-            if (list.get(1).equals(accNum) && list.get(4).equals(accName)){
+            if (list.get(1).equals(accNum) && list.get(2).equals(accName)){
                 return true;
             }
         }
